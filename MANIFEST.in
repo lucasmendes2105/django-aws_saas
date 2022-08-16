@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+recursive-include aws_saas/static *
+recursive-include aws_saas/templates *
+recursive-include aws_saas/templatetags *
+recursive-include docs *
