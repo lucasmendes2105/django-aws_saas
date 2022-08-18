@@ -38,9 +38,9 @@ class ACMRequestCertificate():
         self.certificate.save()
 
         for domain_validation in describe['Certificate']['DomainValidationOptions']:
-            if domain_validation['ValidationMethod'] == 'DNS':
+            if domain_validation['ValidationMethod'] == 'DNS' and 'ResourceRecord' in domain_validation:
                 self.certificate.certificatedomain_set.filter(domain=domain_validation['DomainName']).update(cname_name=domain_validation['ResourceRecord']['Name'], cname_value=domain_validation['ResourceRecord']['Value'], status=domain_validation['ValidationStatus'], type='CNAME')
-            elif domain_validation['ValidationMethod'] == 'EMAIL':
+            elif domain_validation['ValidationMethod'] == 'EMAIL' and 'ValidationEmails' in domain_validation:
                 emails = ', '.join(domain_validation['ValidationEmails'])
                 emails = emails.replace(domain_validation['DomainName'], '')
                 self.certificate.certificatedomain_set.filter(domain=domain_validation['DomainName']).update(emails=emails, status=domain_validation['ValidationStatus'], type='EMAIL')
