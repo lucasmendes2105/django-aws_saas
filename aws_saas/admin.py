@@ -7,7 +7,7 @@ from django.db import transaction as transaction_db
 from django.conf import settings
 from django.urls import reverse, path
 from django.utils.html import format_html
-from .models import Certificate, CertificateDomain, LoadBalancer, LoadBalancerListener, SesEmailIdentity
+from .models import Certificate, CertificateDomain, LoadBalancer, LoadBalancerListener, SesEmailIdentity, SesEmailEvent
 from .services.acm_request_certificate import ACMRequestCertificate
 from .services.ses_email_identity import AwsSesEmailIdentity
 from io import StringIO
@@ -30,6 +30,7 @@ class CertificateAdmin(admin.ModelAdmin):
     search_fields = ('certificate_id', 'certificatedomain__domain')
     list_filter = ('in_use', 'is_qualified', 'status')
     inlines = [CertificateDomainInline, ]
+    actions = None
 
     def get_fields(self, request, obj=None):
         if not obj:
@@ -172,6 +173,7 @@ class SesEmailIdentityAdmin(admin.ModelAdmin):
     list_display = ('identity', 'type', 'sending_enabled', 'btn_aws_ses')
     search_fields = ('identity',)
     list_filter = ('sending_enabled', 'type')
+    actions = None
 
     def get_fields(self, request, obj=None):
         if not obj:
@@ -226,3 +228,15 @@ class SesEmailIdentityAdmin(admin.ModelAdmin):
         management.call_command('ses_sync_identities', stdout=stdout)
         messages.info(request, stdout.getvalue())
         return redirect(reverse('admin:aws_saas_sesemailidentity_changelist'))
+
+
+class SesEmailEventAdmin(admin.ModelAdmin):
+    model = SesEmailEvent
+    list_display = ('created_at_short', 'email', 'event_type', 'bounce_type', 'bounce_sub_type', 'complaint_feedback_type', 'reject_reason', 'recipient_status', 'status')
+    list_display_links = None
+    list_filter = ('event_type', 'bounce_type', 'bounce_sub_type', 'status')
+    search_fields = ('email',)
+
+    @admin.display(description='Data cadastro', ordering='created_at')
+    def created_at_short(self, obj):
+        return obj.created_at.strftime("%d/%m/%y %H:%M")
