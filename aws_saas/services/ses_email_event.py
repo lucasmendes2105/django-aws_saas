@@ -1,4 +1,5 @@
 from django.core.mail import EmailMessage
+from django.http import Http404
 from django.conf import settings
 from ..models import SesEmailEvent
 import json
@@ -9,9 +10,12 @@ class AwsSesEmailEvent:
     def __init__(self, request, token):
         self.request = request
         self.token = token
-        self.body = json.loads(request.body)
+        self.body = json.loads(request.body) if self.request.method == 'POST' else None
 
     def run(self):
+        if self.request.method != 'POST':
+            raise Http404
+
         if self.token != settings.SES_AWS_SNS_TOKEN:
             return
 
@@ -92,7 +96,7 @@ class AwsSesEmailEvent:
 
     def subscription_confirmation(self):
         html = self.body['SubscribeURL']
-        email = EmailMessage(subject='SubscriptionConfirmation', body=html, from_email=settings.EMAIL_ADMIN, to=settings.EMAIL_ADMIN)
+        email = EmailMessage(subject='SubscriptionConfirmation', body=html, from_email=settings.EMAIL_ADMIN, to=[settings.EMAIL_ADMIN, ])
         email.content_subtype = "html"
         email_send = email.send(fail_silently=True)
         return email_send
