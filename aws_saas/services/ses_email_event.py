@@ -51,7 +51,7 @@ class AwsSesEmailEvent:
                 'event_type': message['eventType'],
                 'bounce_type': message['bounce']['bounceType'],
                 'bounce_sub_type': message['bounce']['bounceSubType'],
-                'recipient_status': recipient['status']
+                'recipient_status': recipient.get('status')
             }
             SesEmailEvent.objects.create(**data)
 
@@ -90,7 +90,7 @@ class AwsSesEmailEvent:
             data = {
                 'email': recipient['emailAddress'],
                 'event_type': message['eventType'],
-                'recipient_status': recipient['status']
+                'recipient_status': recipient.get('status')
             }
             SesEmailEvent.objects.create(**data)
 

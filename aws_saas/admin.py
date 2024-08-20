@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from .models import Certificate, CertificateDomain, LoadBalancer, LoadBalancerListener, SesEmailIdentity, SesEmailEvent
 from .services.acm_request_certificate import ACMRequestCertificate
 from .services.ses_email_identity import AwsSesEmailIdentity
+from .services.ses_util import RECIPIENT_STATUS
 from io import StringIO
 import pdb
 import json
@@ -232,11 +233,21 @@ class SesEmailIdentityAdmin(admin.ModelAdmin):
 
 class SesEmailEventAdmin(admin.ModelAdmin):
     model = SesEmailEvent
-    list_display = ('created_at_short', 'email', 'event_type', 'bounce_type', 'bounce_sub_type', 'complaint_feedback_type', 'reject_reason', 'recipient_status', 'status')
+    list_display = ('created_at_short', 'email', 'event_type', 'bounce_type', 'bounce_sub_type', 'recipient_status_display', 'complaint_feedback_type', 'reject_reason', 'status')
     list_display_links = None
-    list_filter = ('event_type', 'bounce_type', 'bounce_sub_type', 'status')
+    list_filter = ('event_type', 'bounce_type', 'bounce_sub_type', 'status', 'recipient_status')
     search_fields = ('email',)
 
     @admin.display(description='Data cadastro', ordering='created_at')
     def created_at_short(self, obj):
         return obj.created_at.strftime("%d/%m/%y %H:%M")
+
+    @admin.display(description='Recipient Status', ordering='recipient_status')
+    def recipient_status_display(self, obj):
+        status_dict = RECIPIENT_STATUS.get(obj.recipient_status) or {}
+        return format_html("<a href='javascript:;' onclick='showDescription(\"{}\")'>{} - {}</a>".format(obj.recipient_status, obj.recipient_status, status_dict.get('title')))
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['recipient_status_list'] = RECIPIENT_STATUS
+        return super().changelist_view(request, extra_context=extra_context)
