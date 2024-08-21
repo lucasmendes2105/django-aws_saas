@@ -3,6 +3,7 @@ from django.http import Http404
 from django.conf import settings
 from ..models import SesEmailEvent
 import json
+import re
 
 
 class AwsSesEmailEvent:
@@ -47,7 +48,7 @@ class AwsSesEmailEvent:
         recipients = message['bounce']['bouncedRecipients']
         for recipient in recipients:
             data = {
-                'email': recipient['emailAddress'],
+                'email': self.clean_email(recipient['emailAddress']),
                 'event_type': message['eventType'],
                 'bounce_type': message['bounce']['bounceType'],
                 'bounce_sub_type': message['bounce']['bounceSubType'],
@@ -59,7 +60,7 @@ class AwsSesEmailEvent:
         recipients = message['complaint']['complainedRecipients']
         for recipient in recipients:
             data = {
-                'email': recipient['emailAddress'],
+                'email': self.clean_email(recipient['emailAddress']),
                 'event_type': message['eventType'],
                 'complaint_feedback_type': message['complaint']['complaintFeedbackType'],
             }
@@ -69,7 +70,7 @@ class AwsSesEmailEvent:
         recipients = message['delivery']['recipients']
         for recipient in recipients:
             data = {
-                'email': recipient,
+                'email': self.clean_email(recipient),
                 'event_type': message['eventType'],
             }
             SesEmailEvent.objects.create(**data)
@@ -78,7 +79,7 @@ class AwsSesEmailEvent:
         recipients = message['mail']['destination']
         for recipient in recipients:
             data = {
-                'email': recipient,
+                'email': self.clean_email(recipient),
                 'event_type': message['eventType'],
                 'reject_reason': message['reject']['reason']
             }
@@ -88,7 +89,7 @@ class AwsSesEmailEvent:
         recipients = message['deliveryDelay']['delayedRecipients']
         for recipient in recipients:
             data = {
-                'email': recipient['emailAddress'],
+                'email': self.clean_email(recipient['emailAddress']),
                 'event_type': message['eventType'],
                 'recipient_status': recipient.get('status')
             }
@@ -100,3 +101,9 @@ class AwsSesEmailEvent:
         email.content_subtype = "html"
         email_send = email.send(fail_silently=True)
         return email_send
+
+    def clean_email(self, email):
+        if '<' in email:
+            email_cleaned = re.search(r'<(.*?)>', email)
+            return email_cleaned.group(1) if email_cleaned else email
+        return email

@@ -18,5 +18,6 @@ RECIPIENT_STATUS = {
     '5.4.4': {'title': 'Falha no recebedor', 'description': 'O servidor do destino falhou ao tentar resolver o nome do domínio remetente.'},
     '5.5.0': {'title': 'Rejeitado pelo recebedor', 'description': 'O servidor de e-mail do destinatário pode estar rejeitando a mensagem por motivos como política de spam ou problemas de autenticação entre os servidores.'},
     '5.5.3': {'title': 'SPAM', 'description': 'Esta mensagem significa que o endereço IP do seu servidor de e­mail está atualmente listado como sendo uma fonte de spam.'},
+    '5.7.1': {'title': 'SPAM', 'description': 'O e-mail do destinatário para o qual você está enviando tem uma política que proíbe o e-mail que você enviou.'},
     '5.7.17': {'title': 'E-mail inexistente', 'description': 'A caixa postal do destinatário não existe no domínio destino, provavelmente foi digitado incorretamente.'},
 }

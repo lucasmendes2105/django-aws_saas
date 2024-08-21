@@ -75,3 +75,8 @@ class SesEmailEvent(models.Model):
 
     def __str__(self):
         return self.email
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['status', 'event_type', 'bounce_type']),
+        ]
