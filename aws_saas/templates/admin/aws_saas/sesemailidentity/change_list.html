@@ -1,6 +1,6 @@
 {% extends "admin/change_list.html" %}
 
 {% block object-tools-items %}
-<li><a href="{% url 'admin:ses_sync_identities' %}">Sync</a></li>
+<a href="{% url 'admin:ses_sync_identities' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-rotate me-1"></i> Sync</a>
 {{block.super}}
 {% endblock %}

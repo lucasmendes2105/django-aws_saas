@@ -62,7 +62,7 @@ class AwsSesEmailEvent:
             data = {
                 'email': self.clean_email(recipient['emailAddress']),
                 'event_type': message['eventType'],
-                'complaint_feedback_type': message['complaint']['complaintFeedbackType'],
+                'complaint_feedback_type': message['complaint'].get('complaintFeedbackType'),
             }
             SesEmailEvent.objects.create(**data)
 

@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            self.client = boto3.client('acm', aws_access_key_id=settings.ACM_AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.ACM_AWS_SECRET_ACCESS_KEY, region_name=settings.ACM_AWS_REGION)
+            self.client = boto3.client('acm', region_name=settings.ACM_AWS_REGION) # Usa a role da instância EC2 (Elastic Beanstalk)
             self.run()
         except:
             tb = traceback.format_exc()

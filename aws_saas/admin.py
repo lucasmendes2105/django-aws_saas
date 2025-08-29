@@ -233,7 +233,7 @@ class SesEmailIdentityAdmin(admin.ModelAdmin):
 
 class SesEmailEventAdmin(admin.ModelAdmin):
     model = SesEmailEvent
-    list_display = ('created_at_short', 'email', 'event_type', 'bounce_type', 'bounce_sub_type', 'recipient_status_display', 'complaint_feedback_type', 'reject_reason', 'status')
+    list_display = ('created_at_short', 'email', 'event_type', 'bounce_type', 'bounce_sub_type', 'recipient_status_display', 'status')
     list_display_links = None
     list_filter = ('event_type', 'bounce_type', 'bounce_sub_type', 'status', 'recipient_status')
     search_fields = ('email',)
@@ -245,7 +245,15 @@ class SesEmailEventAdmin(admin.ModelAdmin):
     @admin.display(description='Recipient Status', ordering='recipient_status')
     def recipient_status_display(self, obj):
         status_dict = RECIPIENT_STATUS.get(obj.recipient_status) or {}
-        return format_html("<a href='javascript:;' onclick='showDescription(\"{}\")'>{} - {}</a>".format(obj.recipient_status, obj.recipient_status, status_dict.get('title')))
+        result = "<a href='javascript:;' onclick='showDescription(\"{}\")'>{} - {}</a>".format(obj.recipient_status, obj.recipient_status, status_dict.get('title'))
+
+        if obj.complaint_feedback_type not in [None, '']:
+            result += f"<br>{obj.complaint_feedback_type}"
+
+        if obj.reject_reason not in [None, '']:
+            result += f"<br>{obj.reject_reason}"
+
+        return format_html(result)
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}

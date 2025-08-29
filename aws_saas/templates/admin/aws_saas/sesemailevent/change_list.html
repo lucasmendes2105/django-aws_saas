@@ -1,20 +1,18 @@
 {% extends "admin/change_list.html" %}
 
 {% block content_title %}
-<h1 style="float:left">Status de e-mails enviados</h1>
-<p>
-    <a href="javascript:void();" onclick="$('#recipientStatusAlert').toggle();" style="margin-left: 15px; ">
-        Ver Lista de Status
-    </a>
-</p>
+<h1 class="feature-title">Status de e-mails enviados</h1>
 
-<div class="iso-bootstrap">
-    <div id="recipientStatusAlert" class="alert alert-secondary" style="line-height: 1.5; display:none" role="alert">
-        {% for key, item in recipient_status_list.items %}
-        <b>{{key}} - {{item.title}}</b> - {{item.description}}<br>
-        {% endfor %}
-    </div>
+<div id="recipientStatusAlert" class="alert alert-secondary" style="line-height: 1.5; display:none" role="alert">
+    {% for key, item in recipient_status_list.items %}
+    <b>{{key}} - {{item.title}}</b> - {{item.description}}<br>
+    {% endfor %}
 </div>
+{% endblock %}
+
+{% block object-tools-items %}
+<a href="javascript:void();" onclick="$('#recipientStatusAlert').toggle();" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-list me-1"></i> Ver Lista de Status</a>
+{{block.super}}
 {% endblock %}
 
 {% block extrajs %}

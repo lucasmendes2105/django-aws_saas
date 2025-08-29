@@ -10,7 +10,7 @@ class ACMRequestCertificate():
 
     def __init__(self, certificate):
         self.certificate = certificate
-        self.client = boto3.client('acm', aws_access_key_id=settings.ACM_AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.ACM_AWS_SECRET_ACCESS_KEY, region_name=settings.ACM_AWS_REGION)
+        self.client = boto3.client('acm', region_name=settings.ACM_AWS_REGION) # Usa a role da instância EC2 (Elastic Beanstalk)
 
     def request(self):
         alternative_names = self.certificate.certificatedomain_set.values_list('domain', flat=True).all()
@@ -78,7 +78,7 @@ class ACMRequestCertificate():
         return self.client.list_certificates()
 
     def aws_listener_certificates(self, operation, listener_arn, certificate_arn):
-        client = boto3.client('elbv2', aws_access_key_id=settings.ACM_AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.ACM_AWS_SECRET_ACCESS_KEY, region_name=settings.ACM_AWS_REGION)
+        client = boto3.client('elbv2', region_name=settings.ACM_AWS_REGION)
         if operation == 'add':
             return client.add_listener_certificates(ListenerArn=listener_arn, Certificates=[{'CertificateArn': certificate_arn}])
         if operation == 'remove':

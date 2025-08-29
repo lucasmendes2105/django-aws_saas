@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            self.client = boto3.client('sesv2', aws_access_key_id=settings.SES_AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.SES_AWS_SECRET_ACCESS_KEY, region_name=settings.SES_AWS_REGION)
+            self.client = boto3.client('sesv2', region_name=settings.SES_AWS_REGION)
             self.run()
         except:
             tb = traceback.format_exc()
